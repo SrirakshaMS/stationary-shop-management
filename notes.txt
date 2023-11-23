@@ -1,0 +1,51 @@
+CREATE TRIGGER update_total_price
+AFTER INSERT ON cart
+FOR EACH ROW
+UPDATE orders
+SET total_price = total_price + NEW.price
+WHERE id = NEW.user_id;
+
+----------------------------
+CREATE TRIGGER `insertLog` AFTER INSERT ON `users` FOR EACH ROW INSERT INTO user_log VALUES(null, NEW.id, NOW());
+
+DELIMITER //
+
+CREATE PROCEDURE SearchProducts(IN searchBox VARCHAR(255))
+BEGIN
+    SELECT * FROM products WHERE name LIKE CONCAT('%', searchBox, '%');
+END //
+
+DELIMITER ;
+----------------------------
+
+CALL SearchProducts('your_search_term');
+----------------------------
+<?php
+
+try {
+    $conn = new PDO("mysql:host=localhost;dbname=your_database", "your_username", "your_password");
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    $searchTerm = 'your_search_term';
+    
+    $stmt = $conn->prepare("CALL SearchProducts(:searchTerm)");
+    $stmt->bindParam(':searchTerm', $searchTerm, PDO::PARAM_STR);
+    $stmt->execute();
+
+    // Process the results
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        // Handle each row of the result
+        print_r($row);
+    }
+} catch (PDOException $e) {
+    echo "Error: " . $e->getMessage();
+}
+
+
+----------------------------
+$host = "127.0.0.1";
+    $user = "rahulreghunath11";                     //Your Cloud 9 username
+    $pass = "";                                  //Remember, there is NO password by default!
+    $db = "db_movie";                                  //Your database name you want to connect to
+    $port = 3307;
+     $con = mysqli_connect($host, $user, $pass, $db, $port)or die(mysql_error());
